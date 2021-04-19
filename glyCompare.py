@@ -141,7 +141,7 @@ def structure(args):
     project_name = abd_path.split("/")[-1].split("_abundance_table.csv")[0]
     working_addr = args.output_directory
     # Hard code for now
-    reference_addr = "/Users/zhangyujie/Desktop/Lewis Lab/GlyCompare/static/reference"
+    reference_addr = "./reference"
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
     pipeline_functions.check_init_dir(keywords_dict)
     # Create temperary source data. Delete after GlyCompare is done.
@@ -291,7 +291,7 @@ def composition(args):
     project_name = abd_path.split("/")[-1].split("_abundance_table.csv")[0]
     working_addr = args.output_directory
     # Hard code for now
-    reference_addr = "/Users/zhangyujie/Desktop/Lewis Lab/GlyCompare/static/reference"
+    reference_addr = "./reference"
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr)
     pipeline_functions.check_init_dir(keywords_dict)
     # Create temperary source data. Delete after GlyCompare is done.
