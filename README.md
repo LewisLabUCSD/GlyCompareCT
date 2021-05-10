@@ -1,2 +1,2 @@
-# glyCompare_CT
-glyCompare command line tool
+# GlyCompare_CT
+GlyCompare command line tool
