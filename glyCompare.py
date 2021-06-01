@@ -17,15 +17,15 @@ def main():
     parser_structure.add_argument("-v", help="Variable annotation file", dest="variable_annotation", type=str, required=True)
     parser_structure.add_argument("-o", help="Output directory", dest="output_directory", type=str, required=True)
     parser_structure.add_argument("-s", help="Data is pure structural, do not contain linkage information", dest="no_linkage_info", action='store_true')
-    parser_structure.add_argument("-np", help="Number of processors using", dest="num_processors", type=int, default=2)
+    parser_structure.add_argument("-c", help="Number of processors using", dest="num_processors", type=int, default=1)
     parser_structure.add_argument("-p", help="Structural data syntax. Choose from [glycoCT, iupac_extended, linear_code, wurcs, glytoucan_id]", dest="data_syntax", choices=['glycoCT', 'iupac_extended', 'linear_code', 'wurcs', 'glytoucan_id'], required=True)
     parser_structure.add_argument("-n", help="Glycan abundance normalization. Choose from [none, min-max, prob_quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob_quot'], default='none')
     parser_structure.add_argument("-m", help="Substructure abundance multiplier. Choose from [binary, integer]", dest="multiplier", choices=['binary', 'integer'], default='integer')
     parser_structure.add_argument("-no_sub_norm", help="Do not normalize substructure abundance. Leave as the absolute value", dest="no_substructure_normlization", action='store_true')
     # custom root only used when root is set to custom
     parser_structure.add_argument("-r", help="Set the glycan root. Choose from [epitope, N, O, lactose, custom]", dest="root", choices=['epitope', 'N', 'O', 'lactose', 'custom'], default='epitope')
-    parser_structure.add_argument("-cr", help="Custom root", dest="custom_root", type=str, default='')
-    parser_structure.add_argument("-map", help="Draw motif abundance heatmap", dest="heatmap", action='store_true')
+    parser_structure.add_argument("-u", help="Custom root", dest="custom_root", type=str, default='')
+    parser_structure.add_argument("-d", help="Draw motif abundance heatmap", dest="heatmap", action='store_true')
         
     parser_composition = subparsers.add_parser('composition')
     parser_composition.add_argument("-a", help="Glycan abundance table file", dest="abundance_table", type=str, required=True)
@@ -54,7 +54,7 @@ def input_validation(args):
     
     # Validate custom root is set if root is set to be custom.
     if args.subcommand == "structure" and args.root == 'custom' and not args.custom_root:
-        raise Exception("Please specify custom root -cr")
+        raise Exception("Please specify custom root -u")
     
     print("Validating input files...")
     ### Validate file paths
