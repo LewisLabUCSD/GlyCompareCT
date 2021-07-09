@@ -139,7 +139,8 @@ def structure(args):
     var_path = os.path.abspath(args.variable_annotation)
     output_path = os.path.abspath(args.output_directory)
     project_name = abd_path.split("/")[-1].split("_abundance_table.csv")[0]
-    working_addr = args.output_directory
+    output_path = output_path + "/project_name"
+    working_addr = args.output_directory + "/project_name"
     # Hard code for now
     reference_addr = os.path.dirname(os.path.abspath(__file__)) + "/reference"
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
