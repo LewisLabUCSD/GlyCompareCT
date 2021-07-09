@@ -21,7 +21,7 @@ def main():
     parser_structure.add_argument("-p", help="Structural data syntax. Choose from [glycoCT, iupac_extended, linear_code, wurcs, glytoucan_id]", dest="data_syntax", choices=['glycoCT', 'iupac_extended', 'linear_code', 'wurcs', 'glytoucan_id'], required=True)
     parser_structure.add_argument("-n", help="Glycan abundance normalization. Choose from [none, min-max, prob_quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob_quot'], default='none')
     parser_structure.add_argument("-m", help="Substructure abundance multiplier. Choose from [binary, integer]", dest="multiplier", choices=['binary', 'integer'], default='integer')
-    parser_structure.add_argument("-no_sub_norm", help="Do not normalize substructure abundance. Leave as the absolute value", dest="no_substructure_normlization", action='store_true')
+    parser_structure.add_argument("-b", help="Do not normalize substructure abundance. Leave as the absolute value", dest="no_substructure_normlization", action='store_true')
     # custom root only used when root is set to custom
     parser_structure.add_argument("-r", help="Set the glycan root. Choose from [epitope, N, O, lactose, custom]", dest="root", choices=['epitope', 'N', 'O', 'lactose', 'custom'], default='epitope')
     parser_structure.add_argument("-u", help="Custom root", dest="custom_root", type=str, default='')
