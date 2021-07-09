@@ -147,16 +147,21 @@ def structure(args):
     pipeline_functions.check_init_dir(keywords_dict)
     # Create temperary source data. Delete after GlyCompare is done.
     try:
+        os.popen("rm " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
         os.popen("cp " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
+        os.popen("rm " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
         os.popen("cp " + "\ ".join(var_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
     except:
+        os.popen("del " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
         os.popen("copy " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
+        os.popen("del " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
         os.popen("copy " + "\ ".join(var_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
     
     while True:
+        time.sleep(5)
         if os.path.isfile(output_path + "/source_data/" + abd_path.split("/")[-1]) and os.path.isfile(output_path + "/source_data/" + var_path.split("/")[-1]):
             break
-        time.sleep(3)
+        
         
     print("Generating glycoCT local files and glycan dictionary...")
     syntax_convert = {"glycoCT": "glycoCT", "iupac_extended": "IUPAC_extended", "linear_code": "linear code", "wurcs": "WURCS", "glytoucan_id": "glytoucan ID"}
