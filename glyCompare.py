@@ -197,9 +197,9 @@ def structure(args):
     glycan_abd_table = glycan_abd_table[(glycan_abd_table.T != 0).any()]
     norm = args.glycan_abundance_normalization
     if norm == "min-max":
-        glycan_abd_table = normalization(glycan_abd_table, style = "std")
+        glycan_abd_table = pipeline_functions.normalization(glycan_abd_table, style = "std")
     elif norm == "prob_quot":
-        glycan_abd_table = normalization(glycan_abd_table, style = "pq")
+        glycan_abd_table = pipeline_functions.normalization(glycan_abd_table, style = "pq")
     elif norm == "none":
         glycan_abd_table = glycan_abd_table
     glycan_abd_table = glycan_abd_table.transpose()
