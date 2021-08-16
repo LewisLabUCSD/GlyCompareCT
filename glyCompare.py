@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from glycompare import *
 import time
 import json
+from pathlib import PureWindowsPath
 
 def main():
     parser = argparse.ArgumentParser(description="GlyCompare command line tool")
@@ -138,11 +139,12 @@ def structure(args):
     abd_path = os.path.abspath(args.abundance_table)
     var_path = os.path.abspath(args.variable_annotation)
     output_path = os.path.abspath(args.output_directory)
-    project_name = abd_path.split("/")[-1].split("_abundance_table.csv")[0]
-    output_path = output_path + "/" + project_name
-    working_addr = args.output_directory + "/" + project_name
+    project_name = PureWindowsPath(abd_path).name.split("_abundance_table.csv")[0]
+#     project_name = abd_path.split("_").split("_abundance_table.csv")[0]
+    output_path = os.path.join(output_path, project_name)
+    working_addr = os.path.join(args.output_directory, project_name)
     # Hard code for now
-    reference_addr = os.path.dirname(os.path.abspath(__file__)) + "/reference"
+    reference_addr = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reference")
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
     pipeline_functions.check_init_dir(keywords_dict)
     # Create temperary source data. Delete after GlyCompare is done.
@@ -152,14 +154,14 @@ def structure(args):
         os.popen("rm " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
         os.popen("cp " + "\ ".join(var_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
     except:
-        os.popen("del " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
-        os.popen("copy " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
-        os.popen("del " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
-        os.popen("copy " + "\ ".join(var_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
+        os.popen("del \"" + output_path + "\\source_data\\" + PureWindowsPath(abd_path).name + "\"")
+        os.popen("copy \"" + abd_path + "\" \"" + output_path + "\\source_data\\" + PureWindowsPath(abd_path).name + "\"")
+        os.popen("del \"" + output_path + "\\source_data\\" + PureWindowsPath(var_path).name + "\"")
+        os.popen("copy \"" + var_path + "\" \"" + output_path + "\\source_data\\" + PureWindowsPath(var_path).name + "\"")
     
     while True:
         time.sleep(5)
-        if os.path.isfile(output_path + "/source_data/" + abd_path.split("/")[-1]) and os.path.isfile(output_path + "/source_data/" + var_path.split("/")[-1]):
+        if (os.path.isfile(output_path + "/source_data/" + PureWindowsPath(abd_path).name) and os.path.isfile(output_path + "/source_data/" + PureWindowsPath(var_path).name)) or (os.path.isfile(output_path + "\\source_data\\" + PureWindowsPath(abd_path).name) and os.path.isfile(output_path + "\\source_data\\" + PureWindowsPath(var_path).name)):
             break
         
         
@@ -281,10 +283,14 @@ def structure(args):
         os.rename(keywords_dict['plot_output_dir'] + "motif_cluster.svg", keywords_dict['plot_output_dir'] + project_name + "_motif_cluster.svg")
         
     print("Removing intermediate data...")
-    for file in os.listdir(output_path + "/glycoct/"):
-        if os.path.isfile(output_path + "/glycoct/" + file):
-            os.remove(output_path + "/glycoct/" + file)
-    os.rmdir(output_path + "/glycoct/")
+    if os.sep == "/":
+        pre_ = output_path + "/glycoct/"
+    elif os.sep == "\\":
+        pre_ = output_path + "\\glycoct\\"
+    for file in os.listdir(pre_):
+        if os.path.isfile(pre_ + file):
+            os.remove(pre_ + file)
+    os.rmdir(pre_)
     
     
 # Running glyCompare on compositional data
@@ -294,10 +300,10 @@ def composition(args):
     abd_path = os.path.abspath(args.abundance_table)
     var_path = os.path.abspath(args.variable_annotation)
     output_path = os.path.abspath(args.output_directory)
-    project_name = abd_path.split("/")[-1].split("_abundance_table.csv")[0]
+    project_name = PureWindowsPath(abd_path).name.split("_abundance_table.csv")[0]
     working_addr = args.output_directory
-    # Hard code for now
-    reference_addr = os.path.dirname(os.path.abspath(__file__)) + "/reference"
+    # Hard code for now. Might be inconsistent with windows. 
+    reference_addr = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reference")
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr)
     pipeline_functions.check_init_dir(keywords_dict)
     # Create temperary source data. Delete after GlyCompare is done.
@@ -305,11 +311,11 @@ def composition(args):
         os.popen("cp " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
         os.popen("cp " + "\ ".join(var_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
     except:
-        os.popen("copy " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
-        os.popen("copy " + "\ ".join(var_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
+        os.popen("copy \"" + abd_path + "\" \"" + output_path + "\\source_data\\" + PureWindowsPath(abd_path).name + "\"")
+        os.popen("copy \"" + var_path + "\" \"" + output_path + "\\source_data\\" + PureWindowsPath(var_path).name + "\"")
     
     while True:
-        if os.path.isfile(output_path + "/source_data/" + abd_path.split("/")[-1]) and os.path.isfile(output_path + "/source_data/" + var_path.split("/")[-1]):
+        if (os.path.isfile(output_path + "/source_data/" + PureWindowsPath(abd_path).name) and os.path.isfile(output_path + "/source_data/" + PureWindowsPath(var_path).name)) or (os.path.isfile(output_path + "\\source_data\\" + PureWindowsPath(abd_path).name) and os.path.isfile(output_path + "\\source_data\\" + PureWindowsPath(var_path).name)):
             break
         time.sleep(3)
     
@@ -323,7 +329,11 @@ def composition(args):
     elif norm == "none":
         norm_parsed = "no"
     motif_abd, directed_edge_list = pipeline_functions.compositional_data(keywords_dict, protein_sites = protein_sites, reference_vector = None, forced = True, norm = norm_parsed)
-    os.rmdir(output_path + "/glycoct/")
+    if os.sep == "/":
+        pre_ = output_path + "/glycoct/"
+    elif os.sep == "\\":
+        pre_ = output_path + "\\glycoct\\"
+    os.rmdir(pre_)
     
     
 # Validate glycan data syntax. 
