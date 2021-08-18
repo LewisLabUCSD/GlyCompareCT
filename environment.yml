@@ -22,6 +22,6 @@ dependencies:
     - bootstrapped==0.0.2
     - bs4
     - scipy
-    - git+git://github.com/LewisLabUCSD/GlyCompare.git@10c9500
+    - git+git://github.com/LewisLabUCSD/GlyCompare.git@154ff04
 prefix: glyCompare_CT_env
 
