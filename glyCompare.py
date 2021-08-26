@@ -226,8 +226,10 @@ def structure(args):
         core = glycoct.loads(
         """
         RES
-        1b:b-dglc-HEX-1:5
-        LIN""")
+        1b:x-xglc-HEX-x:x
+        2s:n-acetyl
+        LIN
+        1:1d(2+1)2n""")
         only_substructures_start_from_root = True
     elif core_input == "O":
         core = glycoct.loads("""
