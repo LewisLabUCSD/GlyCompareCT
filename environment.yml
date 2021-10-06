@@ -23,6 +23,6 @@ dependencies:
     - bs4
     - scipy
     - pathlib==1.0.1
-    - git+git://github.com/LewisLabUCSD/GlyCompare.git@eceb927
+    - git+git://github.com/LewisLabUCSD/GlyCompare.git@5b58b05
 prefix: glyCompare_CT_env
 
