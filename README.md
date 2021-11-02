@@ -1,5 +1,5 @@
 ![Logo](logo_name.png)
-# GlyCompare_CT
+# GlyCompareCT
 GlyCompare command-line tool. GlyCompare is a novel method wherein glycans from glycomic data are decomposed to a minimal set of intermediate substructures, thus incorporating shared intermediate glycan substructures into all comparisons of glycans. 
 
 ## Citation
@@ -15,21 +15,21 @@ First, please make sure you have `conda` installed. Version recommendation: cond
 Please ```git clone``` the main branch to your target local directory. 
 ```bash
 # get the repo
-git clone https://github.com/yuz682/GlyCompare_CT.git
+git clone https://github.com/yuz682/GlyCompareCT.git
 # enter the repo
-cd GlyCompare_CT
+cd GlyCompareCT
 ```
 
-All dependencies required to run GlyCompare_CT can be installed using `environment.yml`. A new conda environment is created with all dependencies installed. This step will take a while (10 - 15 minutes). 
+All dependencies required to run GlyCompareCT can be installed using `environment.yml`. A new conda environment is created with all dependencies installed. This step will take a while (10 - 15 minutes). 
 ```bash
 # Create the environment with all required dependencies installed.
 conda env create -f environment.yml
 ```
 
-Activate the new environment `glyCompare_CT_env`. Then the preprocessing is all done.
+Activate the new environment `glyCompareCT_env`. Then the preprocessing is all done.
 ```bash
 # Activate conda environment
-conda activate glyCompare_CT_env
+conda activate glyCompareCT_env
 ```
 
 ## User manual
