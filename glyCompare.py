@@ -148,7 +148,7 @@ def structure(args):
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
     pipeline_functions.check_init_dir(keywords_dict)
     # Create temperary source data. Delete after GlyCompare is done.
-    if os.getcwd().count("/") >= os.getcwd().count("\"):
+    if os.getcwd().count("/") >= os.getcwd().count("\\"):
         os.popen("rm " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
         os.popen("cp " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
         os.popen("rm " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
