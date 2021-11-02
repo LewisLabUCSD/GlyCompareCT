@@ -1,4 +1,4 @@
-name: glyCompare_CT_env
+name: glyCompareCT_env
 channels:
   - anaconda
   - conda-forge
@@ -24,5 +24,5 @@ dependencies:
     - scipy
     - pathlib==1.0.1
     - git+git://github.com/LewisLabUCSD/GlyCompare.git@5b58b05
-prefix: glyCompare_CT_env
+prefix: glyCompareCT_env
 
