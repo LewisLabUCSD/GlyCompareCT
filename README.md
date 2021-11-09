@@ -1,4 +1,4 @@
-![Logo](logo_name.png)
+![](logo_name.png)
 # GlyCompareCT
 GlyCompare command-line tool. GlyCompare is a novel method wherein glycans from glycomic data are decomposed to a minimal set of intermediate substructures, thus incorporating shared intermediate glycan substructures into all comparisons of glycans. 
 
@@ -40,7 +40,9 @@ Please refer to the [GlyCompare wiki](https://github.com/LewisLabUCSD/GlyCompare
 
 ### Structure data
 ```bash
-python glyCompare.py structure -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> -o <OUTPUT_DIRECTORY> -p <GLYCAN_DATA_TYPE> [-n <NORMALIZATION_MODE>, -m <SUBSTRUCTURE_ABUNDANCE_MULTIPLIER>, -c <NUMBER_OF_CORES>, -r <ROOT>, -u <CUSTOM_ROOT>, -d, -s, -b]
+python glyCompare.py structure -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> -o <OUTPUT_DIRECTORY> 
+-p <GLYCAN_DATA_TYPE> [-n <NORMALIZATION_MODE>, -m <SUBSTRUCTURE_ABUNDANCE_MULTIPLIER>, 
+-c <NUMBER_OF_CORES>, -r <ROOT>, -u <CUSTOM_ROOT>, -d, -s, -b]
 ```
 
 Required arguments:
@@ -68,7 +70,8 @@ Optional arguments:
 
 ### Composition data
 ```bash
-python glyCompare.py composition -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> -o <OUTPUT_DIRECTORY> [-n <NORMALIZATION_MODE>]
+python glyCompare.py composition -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> -o <OUTPUT_DIRECTORY> 
+[-n <NORMALIZATION_MODE>]
 ```
 
 Required arguments:
