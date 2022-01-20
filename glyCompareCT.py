@@ -67,7 +67,7 @@ def input_validation(args):
     assert os.path.isfile(args.variable_annotation), "Invalid path to variable annotation csv file, check the path: " + args.variable_annotation
     
     # Validate output file path
-    assert os.path.isdir(args.output_directory), "Invalid output path, check the path: " + args.output_directory
+    assert os.path.isdir(args.output_directory.split(os.sep)[:-1]), "Invalid output path, check the path: " + args.output_directory.split(os.sep)[:-1]
     
     # Validate file names
     assert "_abundance_table.csv" in args.abundance_table and "_variable_annotation.csv" in args.variable_annotation and args.abundance_table.split("/")[-1].split("_abundance_table.csv")[0] == args.variable_annotation.split("/")[-1].split("_variable_annotation.csv")[0], "Invalid naming of input files. The files must be .csv files and their prefix should match. The suffix should be _abundance_table.csv and _variable_annotation.csv respectively"
@@ -138,17 +138,16 @@ def structure(args):
     print("Initializing GlyCompare...")
     abd_path = os.path.abspath(args.abundance_table)
     var_path = os.path.abspath(args.variable_annotation)
-    output_path = os.path.abspath(args.output_directory)
-    project_name = PureWindowsPath(abd_path).name.split("_abundance_table.csv")[0]
-#     project_name = abd_path.split("_").split("_abundance_table.csv")[0]
+    output_path = os.path.abspath(args.output_directory.split(os.sep)[:-1])
+    project_name = args.output_directory.split(os.sep)[-1] if args.output_directory.split(os.sep)[-1] else "glyCompareCT"
+#     project_name = PureWindowsPath(abd_path).name.split("_abundance_table.csv")[0]
     output_path = os.path.join(output_path, project_name)
     working_addr = os.path.join(args.output_directory, project_name)
-    # Hard code for now
     reference_addr = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reference")
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
     pipeline_functions.check_init_dir(keywords_dict)
     # Create temperary source data. Delete after GlyCompare is done.
-    if os.getcwd().count("/") >= os.getcwd().count("\\"):
+    if os.sep == "/":
         os.popen("rm " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
         os.popen("cp " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(abd_path.split(" ")).split("/")[-1])
         os.popen("rm " + "\ ".join(output_path.split(" ")) + "/source_data/" + "\ ".join(var_path.split(" ")).split("/")[-1])
@@ -293,6 +292,10 @@ def structure(args):
         if os.path.isfile(pre_ + file):
             os.remove(pre_ + file)
     os.rmdir(pre_)
+    os.rename(output_path + os.sep + "source_data", output_path + os.sep + project_name + "source_data")
+    os.rename(output_path + os.sep + "output_data", output_path + os.sep + project_name + "output_data")
+    if not any(os.scandir(output_path + os.sep + "output_plot")):
+        os.rmdir(output_path + os.sep + "output_plot")
     
     
 # Running glyCompare on compositional data
