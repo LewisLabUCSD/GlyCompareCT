@@ -27,12 +27,14 @@ def main():
     parser_structure.add_argument("-r", help="Set the glycan root. Choose from [epitope, N, O, lactose, custom]", dest="root", choices=['epitope', 'N', 'O', 'lactose', 'custom'], default='epitope')
     parser_structure.add_argument("-u", help="Custom root", dest="custom_root", type=str, default='')
     parser_structure.add_argument("-d", help="Draw motif abundance heatmap", dest="heatmap", action='store_true')
+    parser_structure.add_argument("-i", help="Ignore non-recognized glycan structures and proceed the rest", dest="ignore", action='store_true')
 
     parser_composition = subparsers.add_parser('composition')
     parser_composition.add_argument("-a", help="Glycan abundance table file", dest="abundance_table", type=str, required=True)
     parser_composition.add_argument("-v", help="Variable annotation file", dest="variable_annotation", type=str, required=True)
     parser_composition.add_argument("-o", help="Output directory", dest="output_directory", type=str, required=True)
     parser_composition.add_argument("-n", help="Glycan abundance normalization. Choose from [none, min-max, prob_quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob_quot'], default='none')
+    parser_composition.add_argument("-i", help="Ignore non-recognized glycan compositions and proceed the rest", dest="ignore", action='store_true')
 
     args = parser.parse_args()
     if not args.subcommand:
@@ -105,7 +107,23 @@ def input_validation(args):
         for i in range(len(var_annot["Glycan Structure"])):
             if not glycan_syntax_validation(var_annot["Glycan Structure"][i], args.data_syntax):
                 bad_glycan_names.append(var_annot["Name"][i])
-        assert not bad_glycan_names, "Invalid glycan syntax found. The glycans of the following names failed to be recognized as " + str(args.data_syntax) + ": \n" + "\n".join(bad_glycan_names)
+        if bad_glycan_names:
+            output_path = os.path.abspath(os.sep.join(args.output_directory.split(os.sep)[:-1]))
+            project_name = args.output_directory.split(os.sep)[-1] if args.output_directory.split(os.sep)[-1] else "glyCompareCT"
+            output_path = os.path.abspath(os.path.join(output_path, project_name))
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+            f = open(output_path + os.sep + "bad_glycans.txt", "w")
+            f.write(",".join(bad_glycan_names))
+            f.close()
+            if not args.ignore:
+                assert not bad_glycan_names, ",".join(bad_glycan_names) + "\n" + str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) + " glycans have invalid gstructure syntax. The glycan structures of the above names failed to be recognized as " + str(args.data_syntax) + ". Non-recognized glycans are saved to bad_glycans.txt. Consider using -i to ignore non-recognized glycans and proceed."
+            else:
+                print("\x1b[33;20m Warning: Ignored "  + str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) +  " glycans that have invalid structure syntax. \033[0m")
+                if not os.path.exists(output_path):
+                    os.makedirs(output_path)
+                glycan_abd.drop(bad_glycan_names, axis = 1).to_csv(output_path + os.sep + "temp_abundance_table.csv", index=True)
+                var_annot.drop(var_annot[var_annot["Name"].isin(bad_glycan_names)].index, axis = 0).to_csv(output_path + os.sep + "temp_variable_annotation.csv", index=False)
 
         # Validate optional custom root file
         if args.custom_root:
@@ -132,7 +150,25 @@ def input_validation(args):
         for i in range(len(var_annot["Composition"])):
             if not glycan_syntax_validation(var_annot["Composition"][i], "composition"):
                 bad_glycan_names.append(var_annot["Composition"][i])
-        assert not bad_glycan_names, "Invalid glycan composition format found. The following glycan compositions failed to be recognized as composition data: \n" + "\n".join(bad_glycan_names) + "\nPlease check monosaccharide names and parenthesis closure. All possible monosaccharide names are \n" + str(iupac_syms)
+        if bad_glycan_names:
+            output_path = os.path.abspath(os.sep.join(args.output_directory.split(os.sep)[:-1]))
+            project_name = args.output_directory.split(os.sep)[-1] if args.output_directory.split(os.sep)[-1] else "glyCompareCT"
+            output_path = os.path.abspath(os.path.join(output_path, project_name))
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+            f = open(output_path + os.sep + "bad_glycans.txt", "w")
+            f.write(",".join(bad_glycan_names))
+            f.close()
+            if not args.ignore:
+                assert not bad_glycan_names, str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) + " glycans have invalid glycan composition format. The following glycan compositions failed to be recognized as composition data: \n" + "\,".join(bad_glycan_names) + "\nPlease check monosaccharide names and parenthesis closure. Non-recognized glycans are saved to bad_glycans.txt. All possible monosaccharide names are \n" + str(iupac_syms) + "Consider using -i to ignore non-recognized glycans and proceed."
+            else:
+                print("\x1b[33;20m Warning: Ignored "  + str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) +  " glycans that have invalid composition syntax. \033[0m")
+                if not os.path.exists(output_path):
+                    os.makedirs(output_path)
+                glycan_abd.drop(bad_glycan_names, axis = 1).to_csv(output_path + os.sep + "temp_abundance_table.csv", index=True)
+                var_annot.drop(var_annot[var_annot["Name"].isin(bad_glycan_names)].index, axis = 0).to_csv(output_path + os.sep + "temp_variable_annotation.csv", index=False)
+            
+        
 
 # Running glyCompare on structural data
 def structure(args):
@@ -143,12 +179,14 @@ def structure(args):
     output_path = os.path.abspath(os.sep.join(args.output_directory.split(os.sep)[:-1]))
     project_name = args.output_directory.split(os.sep)[-1] if args.output_directory.split(os.sep)[-1] else "glyCompareCT"
     output_path = os.path.abspath(os.path.join(output_path, project_name))
+    if os.path.isfile(output_path + os.sep + "temp_variable_annotation.csv") and os.path.isfile(output_path + os.sep + "temp_abundance_table.csv") and args.ignore:
+        abd_path = output_path + os.sep + "temp_abundance_table.csv"
+        var_path = output_path + os.sep + "temp_variable_annotation.csv"
     working_addr = output_path
-
     reference_addr = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reference")
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
-    pipeline_functions.check_init_dir(keywords_dict)
     # Create temperary source data. Delete after GlyCompare is done.
+    pipeline_functions.check_init_dir(keywords_dict)
     if os.sep == "/":
         os.popen("cp " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + project_name + "_abundance_table.csv")
         os.popen("cp " + "\ ".join(var_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + project_name + "_variable_annotation.csv")
@@ -319,6 +357,11 @@ def structure(args):
                     os.remove(pre_pl + file)
             os.rmdir(pre_pl)
         os.rename(output_path + os.sep + "output_plot", output_path + os.sep + project_name + "_output_plot")
+    
+    if os.path.isfile(output_path + os.sep + "temp_abundance_table.csv"):
+        os.remove(output_path + os.sep + "temp_abundance_table.csv")
+    if os.path.isfile(output_path + os.sep + "temp_variable_annotation.csv"):
+        os.remove(output_path + os.sep + "temp_variable_annotation.csv")
 
 
 # Running glyCompare on compositional data
@@ -330,6 +373,9 @@ def composition(args):
     output_path = os.path.abspath(os.sep.join(args.output_directory.split(os.sep)[:-1]))
     project_name = args.output_directory.split(os.sep)[-1] if args.output_directory.split(os.sep)[-1] else "glyCompareCT"
     output_path = os.path.abspath(os.path.join(output_path, project_name))
+    if os.path.isfile(output_path + os.sep + "temp_variable_annotation.csv") and os.path.isfile(output_path + os.sep + "temp_abundance_table.csv") and args.ignore:
+        abd_path = output_path + os.sep + "temp_abundance_table.csv"
+        var_path = output_path + os.sep + "temp_variable_annotation.csv"
     working_addr = output_path
 
     reference_addr = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reference")
@@ -394,29 +440,38 @@ def composition(args):
 def glycan_syntax_validation(data, syntax):
     if syntax == "glycoCT":
         try:
-            glycoct.loads(data)
+            temp = glycoct.loads(data)
+            glycoct.dumps(temp)
+            assert isinstance(temp, glypy.Glycan)
         except:
             return False
     elif syntax == "iupac_extended":
         try:
-            iupac.loads(data)
+            temp = iupac.loads(data)
+            iupac.dumps(temp)
+            assert isinstance(temp, glypy.Glycan)
         except:
             return False
     elif syntax == "linear_code":
         try:
-            linear_code.loads(data)
+            temp = linear_code.loads(data)
+            linear_code.dumps(temp)
+            assert isinstance(temp, glypy.Glycan)
         except:
             return False
     elif syntax == "wurcs":
         try:
-            wurcs.loads(data)
+            temp = wurcs.loads(data)
+            wurcs.dumps(temp)
+            assert isinstance(temp, glypy.Glycan)
         except:
             return False
     # Seems like glytoucan SPARQL query is not updated as glytoucan web app. So latest data are likely not querable.
     elif syntax == "glytoucan_id":
         try:
             gct = get_glycoct_from_glytoucan(data)
-            glycoct.loads(gct)
+            glycoct.dumps(glycoct.loads(gct))
+            assert isinstance(glycoct.loads(gct), glypy.Glycan)
         except:
             return False
     elif syntax == "composition":
@@ -489,7 +544,10 @@ WHERE {
     except:
         print("No structure found for " + ID)
         wurcs_structure = get_wurcs_from_glytoucan(ID)
-        structure = glycoct.dumps(wurcs.loads(wurcs_structure))
+        if wurcs_structure:
+            structure = glycoct.dumps(wurcs.loads(wurcs_structure))
+        else:
+            structure = ""
     return structure
 
 
