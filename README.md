@@ -36,6 +36,29 @@ conda activate glyCompareCT_env
 
 Please refer to the [GlyCompare wiki](https://github.com/LewisLabUCSD/GlyCompare/wiki) regarding input file format and more details about input parameters. Please ignore some inconsistent wording as the wiki was written for a web app. 
 
+### Quick start
+
+Retreive example data
+```bash
+git clone https://github.com/LewisLabUCSD/GlyCompare.git 
+```
+Glycopare decomposition of structural, linkage-specific HMO data with no normalization, 2 cores, no normalization, integer substructure counting, epitope-based motif extraction
+```bash
+python glyCompare.py structure \
+  -a GlyCompare/example_data/paper_hmo/source_data/abundance_table.csv \
+  -v GlyCompare/example_data/paper_hmo/source_data/annotation.csv \
+  -o output_hmo/ -p glycoCT -n none \
+  -m integer -c 2 -r epitope
+```
+Glycopare decomposition of structural, linkage-specific HMO data with no normalization, 2 cores, probabalistic-quation normalization, binary substructure counting, lactose-based motif extraction
+```bash
+python glyCompare.py structure \
+  -a GlyCompare/example_data/paper_hmo/source_data/abundance_table.csv \
+  -v GlyCompare/example_data/paper_hmo/source_data/annotation.csv \
+  -o output_hmo/ -p glycoCT -n prob_quot \
+  -m binary -c 2 -r lactose
+```
+
 ### Structure data
 ```bash
 python glyCompare.py structure -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> 
