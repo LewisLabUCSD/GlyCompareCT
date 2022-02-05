@@ -224,8 +224,8 @@ def structure(args):
         reference_dict_addr = keywords_dict['linkage_specific_reference']
     reference_dict = json.load(open(reference_dict_addr, "r"))
     reverse_dict = {v: k for k, v in reference_dict.items()}
-    matched_dict = pipeline_functions.extract_and_merge_substrutures_pip(keywords_dict, num_processors=args.num_processors, reference_dict = reference_dict, reverse_dict = reverse_dict, linkage_specific=linkage_specific, forced=True, merged_list = merged_list, reference_dict_addr = reference_dict_addr)
-    matched_dict = ""
+    matched_df = pipeline_functions.extract_and_merge_substrutures_pip(keywords_dict, num_processors=args.num_processors, reference_dict = reference_dict, reverse_dict = reverse_dict, linkage_specific=linkage_specific, forced=True, merged_list = merged_list, reference_dict_addr = reference_dict_addr)
+    matched_df = ""
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
     if args.no_linkage_info:
         reference_dict_addr = keywords_dict['structure_only_reference']
