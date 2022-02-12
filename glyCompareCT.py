@@ -204,25 +204,36 @@ def structure(args):
     syntax_convert = {"glycoCT": "glycoCT", "iupac_extended": "IUPAC_extended", "linear_code": "linear code", "wurcs": "WURCS", "glytoucan_id": "glytoucan ID"}
     glycan_type = syntax_convert[args.data_syntax]
     pipeline_functions.generate_glycoct_files(keywords_dict, glycan_type)
-    glycan_dict = pipeline_functions.load_glycans_pip(keywords_dict = keywords_dict, data_type='local_glycoct')
     if args.no_linkage_info:
         linkage_specific = False
         merged_list = [keywords_dict['structure_only_glycoct_reference'], keywords_dict['structure_only_wurcs_reference']]
-        reference_dict = keywords_dict['structure_only_reference']
+        reference_dict_addr = keywords_dict['structure_only_reference']
     else:
         linkage_specific = True
         merged_list = [keywords_dict['linkage_specific_glycoct_reference'], keywords_dict['linkage_specific_wurcs_reference']]
-        reference_dict = keywords_dict['linkage_specific_reference']
+        reference_dict_addr = keywords_dict['linkage_specific_reference']
+    reference_dict = json.load(open(reference_dict_addr, "r"))
+    reverse_dict = {v: k for k, v in reference_dict.items()}
+    glycan_dict = pipeline_functions.load_glycans_pip(keywords_dict = keywords_dict, data_type='local_glycoct', reference_dict = reference_dict, reverse_dict = reverse_dict, linkage_specific = linkage_specific, reference_dict_addr = reference_dict_addr)
 
     print("Creating glycan_substructure_occurance_dict...")
-    matched_dict = pipeline_functions.extract_and_merge_substrutures_pip(keywords_dict, num_processors=args.num_processors, linkage_specific=linkage_specific, forced=True, merged_list = merged_list, reference_dict_addr = reference_dict)
-    matched_dict = ""
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
     if args.no_linkage_info:
-        reference_dict = keywords_dict['structure_only_reference']
+        reference_dict_addr = keywords_dict['structure_only_reference']
     else:
-        reference_dict = keywords_dict['linkage_specific_reference']
+        reference_dict_addr = keywords_dict['linkage_specific_reference']
+    reference_dict = json.load(open(reference_dict_addr, "r"))
+    reverse_dict = {v: k for k, v in reference_dict.items()}
+    matched_df = pipeline_functions.extract_and_merge_substrutures_pip(keywords_dict, num_processors=args.num_processors, reference_dict = reference_dict, reverse_dict = reverse_dict, linkage_specific=linkage_specific, forced=True, merged_list = merged_list, reference_dict_addr = reference_dict_addr)
+    matched_df = ""
+    keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
+    if args.no_linkage_info:
+        reference_dict_addr = keywords_dict['structure_only_reference']
+    else:
+        reference_dict_addr = keywords_dict['linkage_specific_reference']
 
+    reference_dict = json.load(open(reference_dict_addr, "r"))
+    reverse_dict = {v: k for k, v in reference_dict.items()}
     chra_to_id = {}
     for i in glycan_dict.keys():
         chra_to_id[i]=i
@@ -290,21 +301,18 @@ def structure(args):
     elif core_input == "epitope":
         core = ""
         only_substructures_start_from_root = False
-    motif_abd_table, motif_lab, merged_weights_dict = pipeline_functions.select_motifs_pip(keywords_dict, linkage_specific=linkage_specific, only_substructures_start_from_root=only_substructures_start_from_root, core=core, drop_parellel=False, drop_diff_abund=False, select_col= [])
+    motif_abd_table, motif_lab, merged_weights_dict = pipeline_functions.select_motifs_pip(keywords_dict, linkage_specific=linkage_specific, only_substructures_start_from_root=only_substructures_start_from_root, reverse_dict = reverse_dict, core=core, drop_parellel=True, drop_diff_abund=False, select_col= [])
 
-    reference_vector = json.load(open(reference_dict, "r"))
+    reference_vector = json.load(open(reference_dict_addr, "r"))
     motif_glycoct = json.load(open(keywords_dict['motif_glycoct_dict_addr'], "r"))
     motif_names = {}
-    # name2ind = {}
     for key in motif_glycoct.keys():
-        gct = motif_glycoct[key]
-        ref_name = reference_vector[gct]
+        ref_name = motif_glycoct[key]
         motif_names[key] = ref_name
-        # name2ind[ref_name] = int(key)
     index_col = list(motif_abd_table.index)
     motif_abd_table.index = [motif_names[str(i)] for i in list(motif_abd_table.index)]
     ref_col = list(motif_abd_table.index)
-    structure_col = [motif_glycoct[str(i)] for i in index_col]
+    structure_col = [reverse_dict[motif_glycoct[str(i)]] for i in index_col]
     motif_abd_table_addr = keywords_dict['motif_abd_table_addr']
     motif_structure_table_addr = motif_abd_table_addr.split(project_name + "_")[0] + project_name + "_motif_structure_map.csv"
     motif_abd_table.to_csv(motif_abd_table_addr)
