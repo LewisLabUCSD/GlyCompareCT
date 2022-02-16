@@ -26,10 +26,10 @@ All dependencies required to run GlyCompareCT can be installed using `environmen
 conda env create -f environment.yml
 ```
 
-Activate the new environment `glyCompareCT_env`. Then the preprocessing is all done.
+Activate the new environment `glycompareCT`. Then the preprocessing is all done.
 ```bash
 # Activate conda environment
-conda activate glyCompareCT_env
+conda activate glycompareCT
 ```
 
 ## User manual
@@ -42,15 +42,14 @@ Retreive example data
 ```bash
 git clone https://github.com/LewisLabUCSD/GlyCompare.git 
 ```
-Glycopare decomposition of structural, linkage-specific HMO data with no normalization, 2 cores, no normalization, integer substructure counting, epitope-based motif extraction
+Glycopare decomposition of structural, linkage-specific HMO data with no normalization, 2 cores, integer substructure counting, epitope-based motif extraction
 ```bash
 python glyCompare.py structure \
   -a GlyCompare/example_data/paper_hmo/source_data/abundance_table.csv \
   -v GlyCompare/example_data/paper_hmo/source_data/annotation.csv \
-  -o output_hmo/ -p glycoCT -n none \
-  -m integer -c 2 -r epitope
+  -o output_hmo/ -p glycoCT -c 2 \
 ```
-Glycopare decomposition of structural, linkage-specific HMO data with no normalization, 2 cores, probabalistic-quation normalization, binary substructure counting, lactose-based motif extraction
+Glycopare decomposition of structural, linkage-specific HMO data with Probabilistic Quotient normalization, 2 cores, binary substructure counting, lactose-based motif extraction
 ```bash
 python glyCompare.py structure \
   -a GlyCompare/example_data/paper_hmo/source_data/abundance_table.csv \
@@ -63,7 +62,7 @@ python glyCompare.py structure \
 ```bash
 python glyCompare.py structure -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> 
 -o <OUTPUT_DIRECTORY> -p <GLYCAN_DATA_TYPE> [-n <NORMALIZATION_MODE>, 
--m <SUBSTRUCTURE_ABUNDANCE_MULTIPLIER>, -c <NUMBER_OF_CORES>, -r <ROOT>, -u <CUSTOM_ROOT>, -d, -s, -b]
+-m <SUBSTRUCTURE_ABUNDANCE_MULTIPLIER>, -c <NUMBER_OF_CORES>, -r <ROOT>, -u <CUSTOM_ROOT>, -d, -s, -b, -i]
 ```
 
 Required arguments:
@@ -81,18 +80,19 @@ Optional arguments:
 | :------------------------ |:-------------:| :-------------|
 | -s 	       |	None        |  Add this parameter if the input glycans don't have linkage information. The default assumes linkage information inclusion.
 | -c        |  1            |  The number of cores to use
-| -n 	       |  'none'	    |  Input glycans normalization within each glycoprofile, choose from <'none', 'min-max', 'prob_quot'>.<br>'none': no normalization;<br>'min-max': each element x is set to (x - min) / (max - min);<br>'prob_quot': A commonly seen normalization method in biological data described in [_Dieterle et al. 2006_](https://pubs.acs.org/doi/10.1021/ac051632c)
+| -n 	       |  'none'	    |  Input glycans normalization within each glycoprofile, choose from <'none', 'min-max', 'prob-quot'>.<br>'none': no normalization;<br>'min-max': each element x is set to (x - min) / (max - min);<br>'prob-quot': A commonly seen normalization method in biological data described in [_Dieterle et al. 2006_](https://pubs.acs.org/doi/10.1021/ac051632c)
 | -b         |  None        |  Add this parameter to keep the absolute value of the substructure abundance. If not set, the substructure will be normalized by sum.
 | -m 		     |  'integer'   |  Substructure abundance multiplier, choose from <'binary', 'integer'>.<br>'binary': 1 if the substructure exists in the glycan, 0 if not;<br>'integer': the occurrence of the substructure in the glycan.
 | -r		     |  'epitope'    |  The root substructure of the substructure network, choose from <'epitope', 'N', 'O', 'lactose', 'custom'>.<br>"epitope": run every possible monosaccharide is a root;<br>'N': the root for N-glycan, **GlcNAc**;<br>'O': the root for O-glycan, **GalNAc**;<br>'lactose': set the root as lactose, **Gal(b1-4)Glc**;<br>'custom': set custom root. You need to write your custom root in glycoCT format to a txt file and specify the file directory in -cr. 
 | -u 	     |  ''           |  The file directory to the txt file containing the custom root in glycoCT format. Only specify this if -r is set to 'custom'. 
 | -d 	     |  None         |  Add this parameter if you want to draw the cluster map based on the output motif abundance table.
+| -i 	     |  None         |  Add this parameter if you want to ignore unrecognized glycan structures and proceed the rest.
 
 
 ### Composition data
 ```bash
 python glyCompare.py composition -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> 
--o <OUTPUT_DIRECTORY> [-n <NORMALIZATION_MODE>]
+-o <OUTPUT_DIRECTORY> [-n <NORMALIZATION_MODE>, -i]
 ```
 
 Required arguments:
@@ -107,4 +107,5 @@ Optional arguments:
 
 | Parameter                 | Default       | Description   |	
 | :------------------------ |:-------------:| :-------------|
-| -n 	       |  'none'	    |  Input glycans normalization within each glycoprofile, choose from <'none', 'min-max', 'prob_quot'>.<br>'none': no normalization;<br>'min-max': each element x 
+| -n 	       |  'none'	    |  Input glycans normalization within each glycoprofile, choose from <'none', 'min-max', 'prob-quot'>.<br>'none': no normalization;<br>'min-max': each element x 
+| -i 	     |  None         |  Add this parameter if you want to ignore unrecognized glycan compositions and proceed the rest.
