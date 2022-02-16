@@ -20,7 +20,7 @@ def main():
     parser_structure.add_argument("-s", help="Data is pure structural, do not contain linkage information", dest="no_linkage_info", action='store_true')
     parser_structure.add_argument("-c", help="Number of processors using", dest="num_processors", type=int, default=1)
     parser_structure.add_argument("-p", help="Structural data syntax. Choose from [glycoCT, iupac_extended, linear_code, wurcs, glytoucan_id]", dest="data_syntax", choices=['glycoCT', 'iupac_extended', 'linear_code', 'wurcs', 'glytoucan_id'], required=True)
-    parser_structure.add_argument("-n", help="Glycan abundance normalization. Choose from [none, min-max, prob_quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob_quot'], default='none')
+    parser_structure.add_argument("-n", help="Glycan abundance normalization. Choose from [none, min-max, prob-quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob-quot'], default='none')
     parser_structure.add_argument("-m", help="Substructure abundance multiplier. Choose from [binary, integer]", dest="multiplier", choices=['binary', 'integer'], default='integer')
     parser_structure.add_argument("-b", help="Do not normalize substructure abundance. Leave as the absolute value", dest="no_substructure_normlization", action='store_true')
     # custom root only used when root is set to custom
@@ -33,7 +33,7 @@ def main():
     parser_composition.add_argument("-a", help="Glycan abundance table file", dest="abundance_table", type=str, required=True)
     parser_composition.add_argument("-v", help="Variable annotation file", dest="variable_annotation", type=str, required=True)
     parser_composition.add_argument("-o", help="Output directory", dest="output_directory", type=str, required=True)
-    parser_composition.add_argument("-n", help="Glycan abundance normalization. Choose from [none, min-max, prob_quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob_quot'], default='none')
+    parser_composition.add_argument("-n", help="Glycan abundance normalization. Choose from [none, min-max, prob-quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob-quot'], default='none')
     parser_composition.add_argument("-i", help="Ignore non-recognized glycan compositions and proceed the rest", dest="ignore", action='store_true')
 
     args = parser.parse_args()
@@ -246,7 +246,7 @@ def structure(args):
     norm = args.glycan_abundance_normalization
     if norm == "min-max":
         glycan_abd_table = pipeline_functions.normalization(glycan_abd_table, style = "std")
-    elif norm == "prob_quot":
+    elif norm == "prob-quot":
         glycan_abd_table = pipeline_functions.normalization(glycan_abd_table, style = "pq")
     elif norm == "none":
         glycan_abd_table = glycan_abd_table
@@ -407,7 +407,7 @@ def composition(args):
     norm = args.glycan_abundance_normalization
     if norm == "min-max":
         norm_parsed = "min-max"
-    elif norm == "prob_quot":
+    elif norm == "prob-quot":
         norm_parsed = "pq"
     elif norm == "none":
         norm_parsed = "no"
