@@ -269,13 +269,7 @@ def structure(args):
     print("Creating motif abundance table...")
     core_input = args.root
     if core_input == "N":
-        core = glycoct.loads(
-        """
-        RES
-        1b:x-xglc-HEX-x:x
-        2s:n-acetyl
-        LIN
-        1:1d(2+1)2n""")
+        core = glycoct.loads('RES\n1b:b-dglc-HEX-1:5\n2s:n-acetyl\n3b:b-dglc-HEX-1:5\n4s:n-acetyl\n5b:b-dman-HEX-1:5\nLIN\n1:1d(2+1)2n\n2:1o(4+1)3d\n3:3d(2+1)4n\n4:3o(4+1)5d\n')
         only_substructures_start_from_root = True
     elif core_input == "O":
         core = glycoct.loads("""
