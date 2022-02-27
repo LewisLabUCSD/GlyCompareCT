@@ -295,7 +295,7 @@ def structure(args):
     elif core_input == "epitope":
         core = ""
         only_substructures_start_from_root = False
-    motif_abd_table, motif_lab, merged_weights_dict = pipeline_functions.select_motifs_pip(keywords_dict, linkage_specific=linkage_specific, only_substructures_start_from_root=only_substructures_start_from_root, reverse_dict = reverse_dict, core=core, drop_parellel=True, drop_diff_abund=False, select_col= [])
+    motif_abd_table, motif_lab, merged_weights_dict = pipeline_functions.select_motifs_pip(keywords_dict, linkage_specific=linkage_specific, only_substructures_start_from_root=only_substructures_start_from_root, reverse_dict = reverse_dict, num_processors=args.num_processors, core=core, drop_parellel=True, drop_diff_abund=False, select_col= [])
 
     reference_vector = json.load(open(reference_dict_addr, "r"))
     motif_glycoct = json.load(open(keywords_dict['motif_glycoct_dict_addr'], "r"))
