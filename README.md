@@ -32,6 +32,10 @@ Activate the new environment `glycompareCT`. Then the preprocessing is all done.
 conda activate glycompareCT
 ```
 
+## Executables
+
+https://zenodo.org/record/6339798#.Yik6OxPMLdo
+
 ## User manual
 
 Please refer to the [GlyCompare wiki](https://github.com/LewisLabUCSD/GlyCompare/wiki) regarding input file format and more details about input parameters. Please ignore some inconsistent wording as the wiki was written for a web app. 
