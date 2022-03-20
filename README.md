@@ -34,7 +34,15 @@ conda activate glycompareCT
 
 ## Executables
 
-https://zenodo.org/record/6339798#.Yik6OxPMLdo
+Executables for Window, MacIntel, and Linux can be downloaded from the [release](https://github.com/yuz682/GlyCompareCT/releases/tag/glycoinformatics) or [zenodo](https://zenodo.org/record/6339798#.Yik6OxPMLdo). The binary file is glyCompareCT (or glyCompareCT.exe). To use more conveniently, you can export the path to PATH variable by 
+
+```bash
+export PATH="<path>/<to>/<glyCompareCT>/<directory>":$PATH
+```
+then
+```bash
+source ~/.bashrc
+```
 
 ## User manual
 
