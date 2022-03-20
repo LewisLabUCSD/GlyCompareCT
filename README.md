@@ -74,8 +74,8 @@ python glyCompare.py structure \
 ```bash
 python glyCompare.py structure -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> 
 -o <OUTPUT_DIRECTORY> -p <GLYCAN_DATA_TYPE> [-n <NORMALIZATION_MODE>, 
--m <SUBSTRUCTURE_ABUNDANCE_MULTIPLIER>, -c <NUMBER_OF_CORES>, -r <ROOT>, -u <CUSTOM_ROOT>, 
--d, -s, -b, -i]
+-m <SUBSTRUCTURE_ABUNDANCE_MULTIPLIER>, -c <NUMBER_OF_CORES>, -r <ROOT>, 
+-u <CUSTOM_ROOT>, -d, -s, -b, -i]
 ```
 
 Required arguments:
