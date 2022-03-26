@@ -72,7 +72,7 @@ python glyCompare.py structure \
 
 ### Structure data
 ```bash
-python glyCompare.py structure -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> 
+python glyCompare.py structure -a <ABUNDANCE TABLE> -v <GLYCAN ANNOTATION> 
 -o <OUTPUT_DIRECTORY> -p <GLYCAN_DATA_TYPE> [-n <NORMALIZATION_MODE>, 
 -m <SUBSTRUCTURE_ABUNDANCE_MULTIPLIER>, -c <NUMBER_OF_CORES>, -r <ROOT>, 
 -cr <CUSTOM_ROOT>, -d, -s, -b, -i]
@@ -83,7 +83,7 @@ Required arguments:
 | Parameter                 | Description  |	
 | :------------------------ |:-------------|
 | -a	       |	The file directory to the abundance table, in csv format
-| -v         |  The file directory to the variable annotation table, in csv format
+| -v         |  The file directory to the glycan annotation table, in csv format
 | -o 	       |	The directory to save the outputs, folder
 | -p 		     |  Glycan data type, choose from <'glycoCT', 'iupac_extended', 'linear_code', 'wurcs', 'glytoucan_id'>
 
@@ -104,7 +104,7 @@ Optional arguments:
 
 ### Composition data
 ```bash
-python glyCompare.py composition -a <ABUNDANCE TABLE> -v <VARIABLE ANNOTATION> 
+python glyCompare.py composition -a <ABUNDANCE TABLE> -v <GLYCAN ANNOTATION> 
 -o <OUTPUT_DIRECTORY> [-n <NORMALIZATION_MODE>, -i]
 ```
 
@@ -113,7 +113,7 @@ Required arguments:
 | Parameter                 | Description  |	
 | :------------------------ |:-------------|
 | -a	       |	The file directory to the abundance table, in csv format
-| -v         |  The file directory to the variable annotation table, in csv format
+| -v         |  The file directory to the glycan annotation table, in csv format
 | -o 	       |	The directory to save the outputs, folder
 
 Optional arguments: 
