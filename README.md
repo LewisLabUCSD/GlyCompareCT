@@ -50,7 +50,7 @@ Please refer to the [GlyCompare wiki](https://github.com/LewisLabUCSD/GlyCompare
 
 ### Quick start
 
-Retreive example data
+#### Retreive example data
 ```bash
 git clone https://github.com/LewisLabUCSD/GlyCompare.git 
 ```
@@ -69,6 +69,21 @@ python glyCompare.py structure \
   -o output_hmo/ -p glycoCT -n prob_quot \
   -m binary -c 2 -r lactose
 ```
+
+#### Naive samples
+
+Simple simulated samples can be retrieved from `GlyCompareCT/Naive samples/`. There are 4 pairs of test samples.
+
+```bash
+cd Naive\ samples/
+
+python glyCompare.py structure \
+  -a test1_abd.csv \
+  -v test1_var.csv \
+  -o test1 -p glycoCT -b \
+  -m integer -c 2 
+```
+
 
 ### Structure data
 ```bash
