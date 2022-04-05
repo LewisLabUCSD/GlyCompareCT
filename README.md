@@ -84,6 +84,11 @@ python glyCompare.py structure \
   -m integer -c 2 
 ```
 
+Inputs:
+![](sample_input.png)
+
+Outputs:
+![](sample_output.png)
 
 ### Structure data
 ```bash
