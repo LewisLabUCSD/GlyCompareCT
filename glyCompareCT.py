@@ -9,33 +9,44 @@ from glycompare import *
 import time
 import json
 from pathlib import PureWindowsPath
+import urllib
+import subprocess
+import requests
+import shlex
 
 def main():
     parser = argparse.ArgumentParser(description="GlyCompare command line tool")
     subparsers = parser.add_subparsers(dest="subcommand")
     parser_structure = subparsers.add_parser('structure')
-    parser_structure.add_argument("-a", help="Glycan abundance table file", dest="abundance_table", type=str, required=True)
-    parser_structure.add_argument("-v", help="Variable annotation file", dest="variable_annotation", type=str, required=True)
-    parser_structure.add_argument("-o", help="Output directory", dest="output_directory", type=str, required=True)
-    parser_structure.add_argument("-s", help="Data is pure structural, do not contain linkage information", dest="no_linkage_info", action='store_true')
-    parser_structure.add_argument("-c", help="Number of processors using", dest="num_processors", type=int, default=1)
-    parser_structure.add_argument("-p", help="Structural data syntax. Choose from [glycoCT, iupac_extended, linear_code, wurcs, glytoucan_id]", dest="data_syntax", choices=['glycoCT', 'iupac_extended', 'linear_code', 'wurcs', 'glytoucan_id'], required=True)
-    parser_structure.add_argument("-n", help="Glycan abundance normalization. Choose from [none, min-max, prob-quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob-quot'], default='none')
-    parser_structure.add_argument("-m", help="Substructure abundance multiplier. Choose from [binary, integer]", dest="multiplier", choices=['binary', 'integer'], default='integer')
-    parser_structure.add_argument("-b", help="Do not normalize substructure abundance. Leave as the absolute value", dest="no_substructure_normlization", action='store_true')
+    parser_structure.add_argument("-a", "--abundance", help="Glycan abundance table file", dest="abundance_table", type=str, required=True)
+    parser_structure.add_argument("-v", "--var_annot", help="Variable annotation file", dest="variable_annotation", type=str, required=True)
+    parser_structure.add_argument("-o", "--output", help="Output directory", dest="output_directory", type=str, required=True)
+    parser_structure.add_argument("-s", "--no_linkage", help="Data is pure structural, do not contain linkage information", dest="no_linkage_info", action='store_true')
+    parser_structure.add_argument("-c", "--core", help="Number of processors using", dest="num_processors", type=int, default=1)
+    parser_structure.add_argument("-p", "--syntax", help="Structural data syntax. Choose from [glycoCT, iupac_extended, linear_code, wurcs, glytoucan_id]", dest="data_syntax", choices=['glycoCT', 'iupac_extended', 'linear_code', 'wurcs', 'glytoucan_id'], required=True)
+    parser_structure.add_argument("-n", "--norm", help="Glycan abundance normalization. Choose from [none, min-max, prob-quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob-quot'], default='none')
+    parser_structure.add_argument("-m", "--multiplier", help="Substructure abundance multiplier. Choose from [binary, integer]", dest="multiplier", choices=['binary', 'integer'], default='integer')
+    parser_structure.add_argument("-b", "--no_sub_norm", help="Do not normalize substructure abundance. Leave as the absolute value", dest="no_substructure_normlization", action='store_true')
     # custom root only used when root is set to custom
-    parser_structure.add_argument("-r", help="Set the glycan root. Choose from [epitope, N, O, lactose, custom]", dest="root", choices=['epitope', 'N', 'O', 'lactose', 'custom'], default='epitope')
-    parser_structure.add_argument("-u", help="Custom root", dest="custom_root", type=str, default='')
-    parser_structure.add_argument("-d", help="Draw motif abundance heatmap", dest="heatmap", action='store_true')
-    parser_structure.add_argument("-i", help="Ignore non-recognized glycan structures and proceed the rest", dest="ignore", action='store_true')
-
+    parser_structure.add_argument("-r", "--root", help="Set the glycan root. Choose from [epitope, N, O, lactose, custom]", dest="root", choices=['epitope', 'N', 'O', 'lactose', 'custom'], default='epitope')
+    parser_structure.add_argument("-u", "--custom_root", help="Custom root", dest="custom_root", type=str, default='')
+    parser_structure.add_argument("-d", "--heatmap", help="Draw motif abundance heatmap", dest="heatmap", action='store_true')
+    parser_structure.add_argument("-i", "--ignore", help="Ignore non-recognized glycan structures and proceed the rest", dest="ignore", action='store_true')
+    parser_structure.add_argument("-e", "--share", help="Either run locally or register the output motif structures to Glytoucan. Choose from [private, register]", dest="share", choices=["private", "register"], default="private")
+    parser_structure.add_argument("-C", "--Contributor_ID", help="Glytoucan Contributor ID", dest="CID", type=str)
+    parser_structure.add_argument("-A", "--API_key", help="Glytoucan API key", dest="API", type=str)
+    
+    
     parser_composition = subparsers.add_parser('composition')
-    parser_composition.add_argument("-a", help="Glycan abundance table file", dest="abundance_table", type=str, required=True)
-    parser_composition.add_argument("-v", help="Variable annotation file", dest="variable_annotation", type=str, required=True)
-    parser_composition.add_argument("-o", help="Output directory", dest="output_directory", type=str, required=True)
-    parser_composition.add_argument("-n", help="Glycan abundance normalization. Choose from [none, min-max, prob-quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob-quot'], default='none')
-    parser_composition.add_argument("-i", help="Ignore non-recognized glycan compositions and proceed the rest", dest="ignore", action='store_true')
+    parser_composition.add_argument("-a", "--abundance", help="Glycan abundance table file", dest="abundance_table", type=str, required=True)
+    parser_composition.add_argument("-v", "--var_annot", help="Variable annotation file", dest="variable_annotation", type=str, required=True)
+    parser_composition.add_argument("-o", "--output", help="Output directory", dest="output_directory", type=str, required=True)
+    parser_composition.add_argument("-n", "--norm", help="Glycan abundance normalization. Choose from [none, min-max, prob-quot]", dest="glycan_abundance_normalization", choices=['none', 'min-max', 'prob-quot'], default='none')
+    parser_composition.add_argument("-i", "--ignore", help="Ignore non-recognized glycan compositions and proceed the rest", dest="ignore", action='store_true')
 
+    parser_annotate = subparsers.add_parser('annotate')
+    parser_annotate.add_argument("-n", "--annotation_table", help="Motig annotation table file", dest="annotation_table", type=str, required=True)
+    
     args = parser.parse_args()
     if not args.subcommand:
         parser.parse_args(["--help"])
@@ -49,16 +60,30 @@ def main():
         parser.set_defaults(func=composition)
         args = parser.parse_args()
         args.func(args)
+    elif args.subcommand == 'annotate':
+        input_validation(args)
+        parser.set_defaults(func=annotation)
+        args = parser.parse_args()
+        args.func(args)
 
 # Validate input:
 # abundance table: 0. file path 1. columns uniqueness (glycans) 2. rows uniqueness (samples) 2. non-negativity
 # variable annotation: 0. file path 1. columns (Name + Glycan Structure) 2. structure data format (whether it's the input syntax) or composition data format
 def input_validation(args):
 
+    if args.subcommand == "annotate":
+        annot = pd.read_csv(args.annotation_table)
+        # Validate correct format of annotation file
+        assert "WURCS" in annot.columns or "glycoCT" in annot.columns, "Annotation table needs to have at least one of WURCS or glycoCT column."
+        return
+    
     # Validate custom root is set if root is set to be custom.
     if args.subcommand == "structure" and args.root == 'custom' and not args.custom_root:
         raise Exception("Please specify custom root -u")
 
+    if args.subcommand == "structure" and args.share == 'register' and (not args.CID or not args.API):
+        raise Exception("You need to set Glytoucan contributor ID and API key to use register mode. You can get them by signing up on https://glytoucan.org/")
+        
     print("Validating input files...")
     ### Validate file paths
 
@@ -168,7 +193,33 @@ def input_validation(args):
                 glycan_abd.drop(bad_glycan_names, axis = 1).to_csv(output_path + os.sep + "temp_abundance_table.csv", index=True)
                 var_annot.drop(var_annot[var_annot["Name"].isin(bad_glycan_names)].index, axis = 0).to_csv(output_path + os.sep + "temp_variable_annotation.csv", index=False)
             
-        
+
+# Fetch glytoucan ID in annotation table. 
+def annotation(args):
+    print("Start annotation mode")
+    annot_path = os.path.abspath(args.annotation_table)
+    annot = pd.read_csv(annot_path, index_col = 0)
+    new_accs = []
+    accs = []
+    print(str(annot.shape[0]) + " glycans in total")
+    if "Glytoucan ID" in annot.columns:
+        accs = annot["Glytoucan ID"].tolist()
+    print("Annotation started")
+    for i in range(annot.shape[0]):
+        if i % 5 == 0 and i != 0:
+            print(str(len(new_accs) - new_accs.count("na")) + "/" + str(i) + " glytoucan ID annotated")
+        if accs and accs[i] != "na":
+            new_accs.append(accs[i])
+        elif "WURCS" in annot.columns:
+            
+            new_accs.append(fetch_glytoucan(annot["WURCS"].tolist()[i], "WURCS"))
+        elif "glycoCT" in annot.columns:
+            new_accs.append(fetch_glytoucan(annot["glycoCT"].tolist()[i], "glycoCT"))
+    print(str(len(new_accs) - new_accs.count("na")) + "/" + str(annot.shape[0]) + " glytoucan ID annotated in total")
+    annot["Glytoucan ID"] = new_accs
+    annot.to_csv(annot_path)
+    
+    
 
 # Running glyCompare on structural data
 def structure(args):
@@ -305,13 +356,29 @@ def structure(args):
         motif_names[key] = ref_name
     index_col = list(motif_abd_table.index)
     motif_abd_table.index = [motif_names[str(i)] for i in list(motif_abd_table.index)]
-    ref_col = list(motif_abd_table.index)
-    structure_col = [reverse_dict[motif_glycoct[str(i)]] for i in index_col]
+#     ref_col = list(motif_abd_table.index)
+    
+    glycoct_col = [reverse_dict[motif_glycoct[str(i)]] for i in index_col]
+    wurcs_col = [wurcs.dumps(glycoct.loads(i)) for i in glycoct_col]
     motif_abd_table_addr = keywords_dict['motif_abd_table_addr']
-    motif_structure_table_addr = motif_abd_table_addr.split(project_name + "_")[0] + project_name + "_motif_structure_map.csv"
+    motif_annotation_addr = motif_abd_table_addr.split(project_name + "_")[0] + project_name + "_motif_annotation.csv"
     motif_abd_table.to_csv(motif_abd_table_addr)
-    motif_structure_table = pd.DataFrame(zip(ref_col, index_col, structure_col), columns = ["Reference Index", "Substructure Index", "Structure"])
-    motif_structure_table.to_csv(motif_structure_table_addr)
+    if args.share == "register":
+        print("Fetching glytoucan ID...")
+        glytoucan_col = []
+        print(str(len(wurcs_col)) + " glycans in total")
+        for i in range(len(wurcs_col)):
+            if i % 5 == 0 and i != 0:
+                print(str(len(glytoucan_col) - glytoucan_col.count("na")) + "/" + str(i) + " glytoucan ID annotated")
+            glytoucan_col.append(fetch_glytoucan(wurcs_col[i], "WURCS"))
+        print(str(len(glytoucan_col) - glytoucan_col.count("na")) + "/" + str(len(wurcs_col)) + " glytoucan ID annotated in total")
+        
+        motif_annotation = pd.DataFrame(zip(index_col, glytoucan_col, wurcs_col, glycoct_col), columns = ["Substructure Index", "Glytoucan ID", "WURCS", "glycoCT"])
+    else:
+        motif_annotation = pd.DataFrame(zip(index_col, wurcs_col, glycoct_col), columns = ["Substructure Index", "WURCS", "glycoCT"])
+    
+    
+    motif_annotation.to_csv(motif_annotation_addr)
 
 
     if args.heatmap:
@@ -347,7 +414,39 @@ def structure(args):
                 os.remove(pre_ot + file)
         os.rmdir(pre_ot)
     os.rename(output_path + os.sep + "output_data", output_path + os.sep + project_name + "_output_data")
-
+    
+    if args.share == "register":
+#         pp = os.path.abspath(output_path + os.sep + project_name + "_output_data/" + project_name + "_register_submission.txt")
+        pp = "." + os.sep + project_name + "_register_submission.txt"
+#         if os.sep == "/":
+#             pp = pp.replace(' ', '\ ')
+#         else:
+#             pp = "\"" + pp + "\""
+        f = open(pp, "w")
+        rc = 0
+        for i in range(len(glytoucan_col)):
+            if glytoucan_col[i] == "na":
+                f.write(wurcs_col[i] + "\n")
+                rc += 1
+        f.close()
+        
+        if rc:
+            print("Registering glycans...")
+#             command = ["bash", "." + os.sep + "curlRegisterFile.sh"]
+            command = "bash" + " curlRegisterFile.sh " + args.CID + " " + args.API
+#             print(command.split() + [pp])
+            process = subprocess.Popen(command.split() + [pp], stdout=subprocess.PIPE, text=True)
+            output, error = process.communicate()
+#             command_result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+#             process.stdin.write(args.CID + " " + args.API + " " + pp)
+#             process.stdin.close()
+#             if process.stderr.read():
+#                 print(process.stderr.read())
+#             print(process.stdout.read())
+            if error:
+                print(error)
+            print(output)
+        os.remove(pp)
 
     if not any(os.scandir(output_path + os.sep + "output_plot")):
         os.rmdir(output_path + os.sep + "output_plot")
@@ -486,6 +585,20 @@ def glycan_syntax_validation(data, syntax):
     return True
 
 
+def fetch_glytoucan(gly, syn):
+    if syn == "WURCS":
+        tt = urllib.parse.quote_plus(gly)
+    elif syn == "glycoCT":
+        ww = wurcs.dumps(glycoct.loads(gly))
+        tt = urllib.parse.quote_plus(ww)
+    r = requests.get("https://api.glycosmos.org/sparqlist/wurcs2gtcids?wurcs=%s" % tt)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    if "id" not in soup.text or "wurcs" not in soup.text:
+        acc = "na"
+    else:
+        acc = soup.text.split(": \"")[1].split("\",")[0]
+    return acc
+    
 def get_wurcs_from_glytoucan(ID):
     sparql = SPARQLWrapper("https://ts.glytoucan.org/sparql")
     sparql.setQuery("""
