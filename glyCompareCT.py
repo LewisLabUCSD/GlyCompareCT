@@ -45,7 +45,7 @@ def main():
     parser_composition.add_argument("-i", "--ignore", help="Ignore non-recognized glycan compositions and proceed the rest", dest="ignore", action='store_true')
 
     parser_annotate = subparsers.add_parser('annotate')
-    parser_annotate.add_argument("-n", "--annotation_table", help="Motig annotation table file", dest="annotation_table", type=str, required=True)
+    parser_annotate.add_argument("-n", "--annotation_table", help="Motif annotation table file", dest="annotation_table", type=str, required=True)
     
     args = parser.parse_args()
     if not args.subcommand:
