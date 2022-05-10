@@ -435,7 +435,7 @@ def structure(args):
 #             command = ["bash", "." + os.sep + "curlRegisterFile.sh"]
             command = "bash" + " curlRegisterFile.sh " + args.CID + " " + args.API
 #             print(command.split() + [pp])
-            process = subprocess.Popen(command.split() + [pp], stdout=subprocess.PIPE, text=True, shell=True)
+            process = subprocess.Popen(command.split() + [pp], stdout=subprocess.PIPE, text=True)
             output, error = process.communicate()
 #             command_result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 #             process.stdin.write(args.CID + " " + args.API + " " + pp)
