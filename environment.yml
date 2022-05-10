@@ -14,6 +14,7 @@ dependencies:
   - seaborn=0.11.0
   - xlrd=1.2.0
   - pip=21.3.1
+  - git
   - pip:
     - glypy==1.0.6
     - importlib==1.0.4
