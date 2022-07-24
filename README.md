@@ -1,6 +1,6 @@
 ![](logo_name.png)
 # GlyCompareCT
-GlyCompareCT is a Python-based command-line tool available at https://github.com/yuz682/GlyCompareCT. The command-line implementation wraps the existing python package (GlyCompare v1.1.3 https://github.com/LewisLabUCSD/GlyCompare) to increase accessibility by simplifying the user interface. A conda environment yml file is provided for stable installation. Executable files are also available on Zenodo (10.5281/zenodo.5889724) for Windows (tested on Windows 10, Core i7), Linux (tested on 18.04.6 LTS and CentOS Linux 7 Core), and Mac OS with Intel chip (macOS 12.1, Core i7). A Mac M1 chip version is under development. 
+GlyCompareCT is a Python-based command-line tool available at https://github.com/yuz682/GlyCompareCT. The command-line implementation wraps the existing python package (GlyCompare v1.1.3 https://github.com/LewisLabUCSD/GlyCompare) to increase accessibility by simplifying the user interface. A conda environment yml file is provided for stable installation. Executable files are also available on Zenodo (https://zenodo.org/record/6342395#.YtywB-zMKw0) for Windows (tested on Windows 10, Core i7), Linux (tested on 18.04.6 LTS and CentOS Linux 7 Core), and Mac OS with Intel chip (macOS 12.1, Core i7). A Mac M1 chip version is under development. 
 
 To simplify the user experience, GlyCompareCT limits mandatory user inputs and provides extensive and informative input and run errors. Input files and parameters are described below with additional detail and examples accessible through github. 
 
@@ -42,7 +42,7 @@ conda activate glycompareCT
 
 ## Executables
 
-Executables for Window, MacIntel, and Linux can be downloaded from the [release](https://github.com/yuz682/GlyCompareCT/releases/tag/glycoinformatics) or [zenodo](https://zenodo.org/record/6339798#.Yik6OxPMLdo). The binary file is glyCompareCT (or glyCompareCT.exe). To use more conveniently, you can export the path to PATH variable by 
+Executables for Window, MacIntel, and Linux can be downloaded from the [release](https://github.com/yuz682/GlyCompareCT/releases/tag/glycoinformatics) or [zenodo](https://zenodo.org/record/6342395#.YtywB-zMKw0). The binary file is glyCompareCT (or glyCompareCT.exe). To use more conveniently, you can export the path to PATH variable by 
 
 ```bash
 export PATH="<path>/<to>/<glyCompareCT>/<directory>":$PATH
