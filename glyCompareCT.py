@@ -130,8 +130,8 @@ def input_validation(args):
         # Validate the data format
         bad_glycan_names = []
         for i in range(len(var_annot["Glycan Structure"])):
-            if not glycan_syntax_validation(var_annot["Glycan Structure"][i], args.data_syntax):
-                bad_glycan_names.append(var_annot["Name"][i])
+            if not glycan_syntax_validation(var_annot["Glycan Structure"].tolist()[i], args.data_syntax):
+                bad_glycan_names.append(var_annot["Name"].tolist()[i])
         if bad_glycan_names:
             output_path = os.path.abspath(os.sep.join(args.output_directory.split(os.sep)[:-1]))
             project_name = args.output_directory.split(os.sep)[-1] if args.output_directory.split(os.sep)[-1] else "glyCompareCT"
@@ -170,11 +170,11 @@ def input_validation(args):
         assert set(glycan_abd.columns) == set(var_annot["Name"]), "The 'Name' column values of the variable annotation file are not the same as the column names of the glycan abundance table. Please check and correct it."
 
         # Validate the data format
-        iupac_syms = ['GlcNAc', 'GalNAc', 'HexNAc', 'Neu5Ac', 'GalA', 'GlcA', 'Glc', 'Gal', 'Man', 'Neu', 'NAc', 'KDN', 'Kdo', 'Ido', 'Rha', 'Fuc', 'Xyl', 'Rib', 'Ara', 'All', 'Api', 'Fru', 'Hex', '4eLeg', '6dAlt', '6dAltNAc', '6dGul', '6dTal', '6dTalNAc', 'Abe', 'Aci', 'AllA', 'AllN', 'AllNAc', 'Alt', 'AltA', 'AltN', 'AltNAc', 'Bac', 'Col', 'DDmanHep', 'Dha', 'Dig', 'FucNAc', 'GalN', 'GlcN', 'Gul', 'GulA', 'GulN', 'GulNAc', 'IdoA', 'IdoN', 'IdoNAc', 'Kdn', 'Leg', 'LDmanHep', 'Lyx', 'ManA', 'ManN', 'ManNAc', 'Mur', 'MurNAc', 'MurNGc', 'Neu5Gc', 'Oli', 'Par', 'Pse', 'Psi', 'Qui', 'QuiNAc', 'RhaNAc', 'Sia', 'Sor', 'Tag', 'Tal', 'TalA', 'TalN', 'TalNAc', 'Tyv', 'Phospho', 'NeuAc']
+#         iupac_syms = ['GlcNAc', 'GalNAc', 'HexNAc', 'Neu5Ac', 'GalA', 'GlcA', 'Glc', 'Gal', 'Man', 'Neu', 'NAc', 'KDN', 'Kdo', 'Ido', 'Rha', 'Fuc', 'Xyl', 'Rib', 'Ara', 'All', 'Api', 'Fru', 'Hex', '4eLeg', '6dAlt', '6dAltNAc', '6dGul', '6dTal', '6dTalNAc', 'Abe', 'Aci', 'AllA', 'AllN', 'AllNAc', 'Alt', 'AltA', 'AltN', 'AltNAc', 'Bac', 'Col', 'DDmanHep', 'Dha', 'Dig', 'FucNAc', 'GalN', 'GlcN', 'Gul', 'GulA', 'GulN', 'GulNAc', 'IdoA', 'IdoN', 'IdoNAc', 'Kdn', 'Leg', 'LDmanHep', 'Lyx', 'ManA', 'ManN', 'ManNAc', 'Mur', 'MurNAc', 'MurNGc', 'Neu5Gc', 'Oli', 'Par', 'Pse', 'Psi', 'Qui', 'QuiNAc', 'RhaNAc', 'Sia', 'Sor', 'Tag', 'Tal', 'TalA', 'TalN', 'TalNAc', 'Tyv', 'Phospho', 'NeuAc']
         bad_glycan_names = []
         for i in range(len(var_annot["Composition"])):
-            if not glycan_syntax_validation(var_annot["Composition"][i], "composition"):
-                bad_glycan_names.append(var_annot["Composition"][i])
+            if not glycan_syntax_validation(var_annot["Composition"].tolist()[i], "composition"):
+                bad_glycan_names.append(var_annot["Name"].tolist()[i])
         if bad_glycan_names:
             output_path = os.path.abspath(os.sep.join(args.output_directory.split(os.sep)[:-1]))
             project_name = args.output_directory.split(os.sep)[-1] if args.output_directory.split(os.sep)[-1] else "glyCompareCT"
@@ -185,7 +185,7 @@ def input_validation(args):
             f.write(",".join(bad_glycan_names))
             f.close()
             if not args.ignore:
-                assert not bad_glycan_names, str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) + " glycans have invalid glycan composition format. The following glycan compositions failed to be recognized as composition data: \n" + "\,".join(bad_glycan_names) + "\nPlease check monosaccharide names and parenthesis closure. Non-recognized glycans are saved to bad_glycans.txt. All possible monosaccharide names are \n" + str(iupac_syms) + "Consider using -i to ignore non-recognized glycans and proceed."
+                assert not bad_glycan_names, str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) + " glycans have invalid glycan composition format. The following glycan compositions failed to be recognized as composition data: \n" + "\,".join(bad_glycan_names) + "\nPlease check monosaccharide names and parenthesis closure. Non-recognized glycans are saved to bad_glycans.txt. Consider using -i to ignore non-recognized glycans and proceed."
             else:
                 print("\x1b[33;20m Warning: Ignored "  + str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) +  " glycans that have invalid composition syntax. \033[0m")
                 if not os.path.exists(output_path):
@@ -356,7 +356,7 @@ def structure(args):
         motif_names[key] = ref_name
     index_col = list(motif_abd_table.index)
     motif_abd_table.index = [motif_names[str(i)] for i in list(motif_abd_table.index)]
-#     ref_col = list(motif_abd_table.index)
+    ref_col = list(motif_abd_table.index)
     
     glycoct_col = [reverse_dict[motif_glycoct[str(i)]] for i in index_col]
     wurcs_col = [wurcs.dumps(glycoct.loads(i)) for i in glycoct_col]
@@ -374,8 +374,10 @@ def structure(args):
         print(str(len(glytoucan_col) - glytoucan_col.count("na")) + "/" + str(len(wurcs_col)) + " glytoucan ID annotated in total")
         
         motif_annotation = pd.DataFrame(zip(index_col, glytoucan_col, wurcs_col, glycoct_col), columns = ["Substructure Index", "Glytoucan ID", "WURCS", "glycoCT"])
+        motif_annotation.index = ref_col
     else:
         motif_annotation = pd.DataFrame(zip(index_col, wurcs_col, glycoct_col), columns = ["Substructure Index", "WURCS", "glycoCT"])
+        motif_annotation.index = ref_col
     
     
     motif_annotation.to_csv(motif_annotation_addr)
@@ -576,9 +578,9 @@ def glycan_syntax_validation(data, syntax):
         except:
             return False
     elif syntax == "composition":
-        iupac_syms = ['GlcNAc', 'GalNAc', 'HexNAc', 'Neu5Ac', 'GalA', 'GlcA', 'Glc', 'Gal', 'Man', 'Neu', 'NAc', 'KDN', 'Kdo', 'Ido', 'Rha', 'Fuc', 'Xyl', 'Rib', 'Ara', 'All', 'Api', 'Fru', 'Hex', '4eLeg', '6dAlt', '6dAltNAc', '6dGul', '6dTal', '6dTalNAc', 'Abe', 'Aci', 'AllA', 'AllN', 'AllNAc', 'Alt', 'AltA', 'AltN', 'AltNAc', 'Bac', 'Col', 'DDmanHep', 'Dha', 'Dig', 'FucNAc', 'GalN', 'GlcN', 'Gul', 'GulA', 'GulN', 'GulNAc', 'IdoA', 'IdoN', 'IdoNAc', 'Kdn', 'Leg', 'LDmanHep', 'Lyx', 'ManA', 'ManN', 'ManNAc', 'Mur', 'MurNAc', 'MurNGc', 'Neu5Gc', 'Oli', 'Par', 'Pse', 'Psi', 'Qui', 'QuiNAc', 'RhaNAc', 'Sia', 'Sor', 'Tag', 'Tal', 'TalA', 'TalN', 'TalNAc', 'Tyv', 'Phospho', 'NeuAc']
+#         iupac_syms = ['GlcNAc', 'GalNAc', 'HexNAc', 'Neu5Ac', 'GalA', 'GlcA', 'Glc', 'Gal', 'Man', 'Neu', 'NAc', 'KDN', 'Kdo', 'Ido', 'Rha', 'Fuc', 'Xyl', 'Rib', 'Ara', 'All', 'Api', 'Fru', 'Hex', '4eLeg', '6dAlt', '6dAltNAc', '6dGul', '6dTal', '6dTalNAc', 'Abe', 'Aci', 'AllA', 'AllN', 'AllNAc', 'Alt', 'AltA', 'AltN', 'AltNAc', 'Bac', 'Col', 'DDmanHep', 'Dha', 'Dig', 'FucNAc', 'GalN', 'GlcN', 'Gul', 'GulA', 'GulN', 'GulNAc', 'IdoA', 'IdoN', 'IdoNAc', 'Kdn', 'Leg', 'LDmanHep', 'Lyx', 'ManA', 'ManN', 'ManNAc', 'Mur', 'MurNAc', 'MurNGc', 'Neu5Gc', 'Oli', 'Par', 'Pse', 'Psi', 'Qui', 'QuiNAc', 'RhaNAc', 'Sia', 'Sor', 'Tag', 'Tal', 'TalA', 'TalN', 'TalNAc', 'Tyv', 'Phospho', 'NeuAc']
         decomp = [i.split("(") for i in data.split(")")]
-        if not (decomp[-1] == [''] and sum([i[0] not in iupac_syms or type(int(i[1])) is not int for i in decomp[:-1]]) == 0):
+        if not (decomp[-1] == [''] and sum([type(int(i[1])) is not int for i in decomp[:-1]]) == 0):
             return False
     else:
         raise Exception("Invalid syntax " + syntax + ". Choose among glycoCT, iupac_extended, linear_code, wurcs, and glytoucan_id")
