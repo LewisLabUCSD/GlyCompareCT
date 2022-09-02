@@ -25,5 +25,5 @@ dependencies:
     - bs4==0.0.1
     - scipy==1.7.3
     - pathlib==1.0.1
-    - git+https://github.com/LewisLabUCSD/GlyCompare.git@dcffb48
+    - git+https://github.com/LewisLabUCSD/GlyCompare.git@aa378b9
 prefix: glycompareCT
