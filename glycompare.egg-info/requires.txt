@@ -1,0 +1,11 @@
+glypy
+Cython
+pandas
+numpy
+seaborn
+networkx
+ndex
+rdflib
+xlrd
+beautifulsoup4
+SPARQLWrapper

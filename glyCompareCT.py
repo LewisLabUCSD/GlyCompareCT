@@ -144,7 +144,7 @@ def input_validation(args):
             if not args.ignore:
                 assert not bad_glycan_names, ",".join(bad_glycan_names) + "\n" + str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) + " glycans have invalid gstructure syntax. The glycan structures of the above names failed to be recognized as " + str(args.data_syntax) + ". Non-recognized glycans are saved to bad_glycans.txt. Consider using -i to ignore non-recognized glycans and proceed."
             else:
-                print("\x1b[33;20m Warning: Ignored "  + str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) +  " glycans that have invalid structure syntax. \033[0m")
+                print("\x1b[33;20mError: Ignored "  + str(len(bad_glycan_names)) + " of " + str(var_annot.shape[0]) +  " glycans that have invalid structure syntax. \033[0m")
                 if not os.path.exists(output_path):
                     os.makedirs(output_path)
                 glycan_abd.drop(bad_glycan_names, axis = 1).to_csv(output_path + os.sep + "temp_abundance_table.csv", index=True)

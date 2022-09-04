@@ -1,0 +1,6 @@
+README.md
+glycompare.egg-info/PKG-INFO
+glycompare.egg-info/SOURCES.txt
+glycompare.egg-info/dependency_links.txt
+glycompare.egg-info/requires.txt
+glycompare.egg-info/top_level.txt
