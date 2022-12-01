@@ -1,5 +1,5 @@
 import argparse
-import os
+import sys,os
 import pandas as pd
 import glypy
 from glypy.io import glycoct, linear_code, wurcs, iupac
@@ -66,6 +66,12 @@ def main():
         args = parser.parse_args()
         args.func(args)
 
+def deafen(function, *args):
+    real_stdout = sys.stdout
+    sys.stdout = open(os.devnull, "w")
+    output = function(*args)
+    sys.stdout = real_stdout
+    return output
 # Validate input:
 # abundance table: 0. file path 1. columns uniqueness (glycans) 2. rows uniqueness (samples) 2. non-negativity
 # variable annotation: 0. file path 1. columns (Name + Glycan Structure) 2. structure data format (whether it's the input syntax) or composition data format
@@ -237,7 +243,8 @@ def structure(args):
     reference_addr = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reference")
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
     # Create temperary source data. Delete after GlyCompare is done.
-    pipeline_functions.check_init_dir(keywords_dict)
+#     pipeline_functions.check_init_dir(keywords_dict)
+    deafen(pipeline_functions.check_init_dir, keywords_dict)
     if os.sep == "/":
         os.popen("cp " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + project_name + "_abundance_table.csv")
         os.popen("cp " + "\ ".join(var_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + project_name + "_variable_annotation.csv")
@@ -254,7 +261,8 @@ def structure(args):
     print("Generating glycoCT local files and glycan dictionary...")
     syntax_convert = {"glycoCT": "glycoCT", "iupac_extended": "IUPAC_extended", "linear_code": "linear code", "wurcs": "WURCS", "glytoucan_id": "glytoucan ID"}
     glycan_type = syntax_convert[args.data_syntax]
-    pipeline_functions.generate_glycoct_files(keywords_dict, glycan_type)
+#     pipeline_functions.generate_glycoct_files(keywords_dict, glycan_type)
+    deafen(pipeline_functions.generate_glycoct_files, keywords_dict, glycan_type)
     if args.no_linkage_info:
         linkage_specific = False
         merged_list = [keywords_dict['structure_only_glycoct_reference'], keywords_dict['structure_only_wurcs_reference']]
@@ -265,8 +273,8 @@ def structure(args):
         reference_dict_addr = keywords_dict['linkage_specific_reference']
     reference_dict = json.load(open(reference_dict_addr, "r"))
     reverse_dict = {v: k for k, v in reference_dict.items()}
-    glycan_dict = pipeline_functions.load_glycans_pip(keywords_dict = keywords_dict, data_type='local_glycoct', reference_dict = reference_dict, reverse_dict = reverse_dict, linkage_specific = linkage_specific, reference_dict_addr = reference_dict_addr)
-
+#     glycan_dict = pipeline_functions.load_glycans_pip(keywords_dict = keywords_dict, data_type='local_glycoct', reference_dict = reference_dict, reverse_dict = reverse_dict, linkage_specific = linkage_specific, reference_dict_addr = reference_dict_addr)
+    glycan_dict = deafen(pipeline_functions.load_glycans_pip, keywords_dict, 'local_glycoct', reference_dict, reverse_dict, linkage_specific, reference_dict_addr)
     print("Creating glycan_substructure_occurance_dict...")
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
     if args.no_linkage_info:
@@ -275,7 +283,8 @@ def structure(args):
         reference_dict_addr = keywords_dict['linkage_specific_reference']
     reference_dict = json.load(open(reference_dict_addr, "r"))
     reverse_dict = {v: k for k, v in reference_dict.items()}
-    matched_df = pipeline_functions.extract_and_merge_substrutures_pip(keywords_dict, num_processors=args.num_processors, reference_dict = reference_dict, reverse_dict = reverse_dict, linkage_specific=linkage_specific, forced=True, merged_list = merged_list, reference_dict_addr = reference_dict_addr)
+#     matched_df = pipeline_functions.extract_and_merge_substrutures_pip(keywords_dict, num_processors=args.num_processors, reference_dict = reference_dict, reverse_dict = reverse_dict, linkage_specific=linkage_specific, forced=True, merged_list = merged_list, reference_dict_addr = reference_dict_addr)
+    matched_df = deafen(pipeline_functions.extract_and_merge_substrutures_pip, keywords_dict, linkage_specific, args.num_processors, reference_dict, reverse_dict, True, merged_list, reference_dict_addr)
     matched_df = ""
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr = reference_addr)
     if args.no_linkage_info:
@@ -313,7 +322,8 @@ def structure(args):
         get_existance = True
     elif args.multiplier == "integer":
         get_existance = False
-    _, glycoprofile_list = pipeline_functions.glycoprofile_pip(keywords_dict, glycan_abd_table, unique_glycan_identifier_to_structure_id=True, already_glytoucan_id=False, external_profile_naming=True, forced=True, absolute = absolute, get_existance = get_existance)
+#     _, glycoprofile_list = pipeline_functions.glycoprofile_pip(keywords_dict, glycan_abd_table, unique_glycan_identifier_to_structure_id=True, already_glytoucan_id=False, external_profile_naming=True, forced=True, absolute = absolute, get_existance = get_existance)
+    _, glycoprofile_list = deafen(pipeline_functions.glycoprofile_pip, keywords_dict, glycan_abd_table, True, False, True, absolute, True, get_existance)
     glycan_abd_table = ""
     glycoprofile_list = ""
 
@@ -346,8 +356,9 @@ def structure(args):
     elif core_input == "epitope":
         core = ""
         only_substructures_start_from_root = False
-    motif_abd_table, motif_lab, merged_weights_dict = pipeline_functions.select_motifs_pip(keywords_dict, linkage_specific=linkage_specific, only_substructures_start_from_root=only_substructures_start_from_root, reverse_dict = reverse_dict, num_processors=args.num_processors, core=core, drop_parellel=True, drop_diff_abund=False, select_col= [])
-
+#     motif_abd_table, motif_lab, merged_weights_dict = pipeline_functions.select_motifs_pip(keywords_dict, linkage_specific=linkage_specific, only_substructures_start_from_root=only_substructures_start_from_root, reverse_dict = reverse_dict, num_processors=args.num_processors, core=core, drop_parellel=True, drop_diff_abund=False, select_col= [])
+    motif_abd_table, motif_lab, merged_weights_dict = deafen(pipeline_functions.select_motifs_pip, keywords_dict, linkage_specific, only_substructures_start_from_root, reverse_dict, args.num_processors, core, True, False, [])
+    
     reference_vector = json.load(open(reference_dict_addr, "r"))
     motif_glycoct = json.load(open(keywords_dict['motif_glycoct_dict_addr'], "r"))
     motif_names = {}
@@ -483,7 +494,8 @@ def composition(args):
 
     reference_addr = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reference")
     keywords_dict = pipeline_functions.load_para_keywords(project_name, working_addr, reference_addr)
-    pipeline_functions.check_init_dir(keywords_dict)
+#     pipeline_functions.check_init_dir(keywords_dict)
+    deafen(pipeline_functions.check_init_dir, keywords_dict)
     # Create temperary source data. Delete after GlyCompare is done.
     if os.sep == "/":
         os.popen("cp " + "\ ".join(abd_path.split(" ")) + " " + "\ ".join(output_path.split(" ")) + "/source_data/" + project_name + "_abundance_table.csv")
@@ -506,7 +518,8 @@ def composition(args):
         norm_parsed = "pq"
     elif norm == "none":
         norm_parsed = "no"
-    motif_abd, directed_edge_list = pipeline_functions.compositional_data(keywords_dict, protein_sites = protein_sites, reference_vector = None, forced = True, norm = norm_parsed)
+#     motif_abd, directed_edge_list = pipeline_functions.compositional_data(keywords_dict, protein_sites = protein_sites, reference_vector = None, forced = True, norm = norm_parsed)
+    motif_abd, directed_edge_list = deafen(pipeline_functions.compositional_data, keywords_dict, protein_sites, None, True,  norm_parsed)
     pre_dt = output_path + os.sep + "glycoct" + os.sep
     for file in os.listdir(pre_dt):
         if os.path.isfile(pre_dt + file):
